@@ -1,5 +1,5 @@
 
-import { Tip } from './types';
+import { Tip } from './types/types';
 
 export const RACE_DATE = '2026-10-11';
 

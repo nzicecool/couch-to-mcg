@@ -1,22 +1,25 @@
 {
-  "name": "couch-to-mcg",
+  "name": "couch-to-mcg-monorepo",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "description": "Couch to MCG - Track your marathons, runs and daily workouts",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "date-fns": "^4.1.0",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "dev:web": "pnpm --filter @couch-to-mcg/web dev",
+    "dev:mobile": "pnpm --filter @couch-to-mcg/mobile start",
+    "build:web": "pnpm --filter @couch-to-mcg/web build",
+    "build:mobile": "pnpm --filter @couch-to-mcg/mobile build",
+    "build:core": "pnpm --filter @couch-to-mcg/core build",
+    "lint": "pnpm -r lint",
+    "type-check": "pnpm -r type-check"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
-    "@vitejs/plugin-react": "^5.0.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0"
+    "typescript": "~5.8.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
   }
 }
