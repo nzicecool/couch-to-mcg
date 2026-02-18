@@ -1,12 +1,9 @@
+# Couch to MCG
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+<img width="512" height="512" alt="couch-to-mcg" src="https://github.com/user-attachments/assets/60e64ea3-cbb5-44de-9a7c-b4851ab26c0f" />
 </div>
 
-# Run and deploy your AI Studio app
-
-This contains everything you need to run your app locally.
-
-View your app in AI Studio: https://ai.studio/apps/drive/1NoLK3RWmEjWtTZLO8QbttrhsNEGyYB5B
+Couch to MCG is an app helps you track your marathons, runs or daily workouts as you wish and you can customize as you wish. Store data locally or extend the app to store data remotely. 
 
 ## Run Locally
 
