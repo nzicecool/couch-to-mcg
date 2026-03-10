@@ -3,6 +3,7 @@ import { format, parseISO, isToday, isAfter, isBefore, subDays, startOfDay, endO
 import { useAppStore } from '@/lib/appStore';
 import { ActivityType, TrainingActivity, DayOverride } from '@/lib/types';
 import { TIPS } from '@/lib/constants';
+import { exportBackup, parseBackupFile, validateBackupData } from '@/lib/backup';
 import { PINAuth } from '@/components/PINAuth';
 import { DayEditor } from '@/components/DayEditor';
 import { MarathonCountdown } from '@/components/MarathonCountdown';
@@ -46,6 +47,7 @@ export default function Home() {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [editingDayDate, setEditingDayDate] = useState<string | null>(null);
+  const [isRestoringBackup, setIsRestoringBackup] = useState(false);
 
   // Initialize store on mount
   useEffect(() => {
@@ -76,6 +78,42 @@ export default function Home() {
     await updateOverride(editingDayDate, override);
     await updateDayNotes(editingDayDate, notes);
     setEditingDayDate(null);
+  };
+
+  const handleExportBackup = () => {
+    try {
+      const profileData = profile || { name: 'Runner', goalTime: '2:00:00', shoeModel: '' };
+      exportBackup(profileData, schedule, customWorkoutTypes);
+      alert('Backup downloaded successfully!');
+    } catch (error) {
+      alert(`Failed to export backup: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  const handleImportBackup = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsRestoringBackup(true);
+      const backupData = await parseBackupFile(file);
+      
+      if (!validateBackupData(backupData)) {
+        throw new Error('Invalid backup file format');
+      }
+
+      if (backupData.profile) {
+        updateProfile(backupData.profile);
+      }
+
+      alert('Backup restored successfully! Please refresh the page to see all changes.');
+      setShowSettings(false);
+    } catch (error) {
+      alert(`Failed to restore backup: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsRestoringBackup(false);
+      event.target.value = '';
+    }
   };
 
   const todayTask = schedule.find(day => isToday(parseISO(day.date)));
@@ -372,6 +410,29 @@ export default function Home() {
               {/* Data Management */}
               <div className="border-b border-border pb-4">
                 <h4 className="font-semibold text-foreground mb-3">Data</h4>
+                <div className="space-y-2 mb-3">
+                  <button
+                    onClick={handleExportBackup}
+                    className="w-full px-4 py-2 bg-emerald-600/20 text-emerald-600 rounded-lg hover:bg-emerald-600/30 transition-colors text-sm font-semibold"
+                  >
+                    Export Backup
+                  </button>
+                  <input
+                    type="file"
+                    accept=".json"
+                    onChange={handleImportBackup}
+                    disabled={isRestoringBackup}
+                    id="backup-import"
+                    className="hidden"
+                  />
+                  <button
+                    onClick={() => document.getElementById('backup-import')?.click()}
+                    disabled={isRestoringBackup}
+                    className="w-full px-4 py-2 bg-blue-600/20 text-blue-600 rounded-lg hover:bg-blue-600/30 transition-colors text-sm font-semibold disabled:opacity-50"
+                  >
+                    {isRestoringBackup ? 'Restoring...' : 'Import Backup'}
+                  </button>
+                </div>
                 <button
                   onClick={() => setShowResetConfirm(true)}
                   className="w-full px-4 py-2 bg-red-600/20 text-red-600 rounded-lg hover:bg-red-600/30 transition-colors text-sm font-semibold"
